@@ -12,7 +12,7 @@ aush_update ()
 if [ -z "$AUSH_UPDATE" ]; then
 export AUSH_UPDATE=1
 # add this source to the updated file if it it is not 'aushed'
-if [ ! -s "$(dirname ${aush_updated_script_file})/lib/aush_source.sh" ]
+if [ ! -s "$(dirname ${aush_updated_script_file})/lib/aush_source.sh" ]; then
 aush "${aush_updated_script_file}"
 fi
 "${aush_updated_script_file}" "$@" &
