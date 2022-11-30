@@ -41,7 +41,6 @@ printf 'aush: could not update; did you logged in with "gh auth login"?'
 fi
 cd $(dirname "$aush_aushed_script_file")
 EOF
-  exit $?
 }
 
 add_source ()
