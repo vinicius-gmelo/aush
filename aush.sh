@@ -55,17 +55,17 @@ add_source ()
       sed "1a\|\# aush must run before any other command\|\.\ $source_file" "$script_file" | tr '|' '\n' > "${script_file}.tmp" && mv "${script_file}.tmp" "$script_file"
       exit 0
     else
-      printf 'aush is made for shell/bash scripts.\n'
+      printf 'aush: aush is made for shell/bash scripts.\n'
       exit 1
     fi
   else
-    printf '%s does not seem to be a script... add a source to it anyway [y/N]? ' "$script_file"
+    printf 'aush: %s does not seem to be a script... aush it anyway [y/N]? ' "$script_file"
     read -r add_anyway
     case "$add_anyway" in
       Y|y|YY|yy)
         create_source_file
         # add source to beginning of script
-        sed "1i\# aush must run before any other command\|\.\ $source_file\|" "$script_file" | tr '|' '\n' > "${script_file}.tmp" && mv "${script_file}.tmp" "$script_file"
+        sed "1i\# aush, autoupdates shell scripts; must run before any other command\|\.\ $source_file\|" "$script_file" | tr '|' '\n' > "${script_file}.tmp" && mv "${script_file}.tmp" "$script_file"
         exit 0
         ;;
       N|n|NN|nn|'')
