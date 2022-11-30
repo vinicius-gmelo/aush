@@ -2,7 +2,7 @@
 
 create_source_file ()
 {
-  local source_file lib_dir
+  local lib_dir
   source_file="$(dirname $script_file)/lib/aush_source.sh"
   lib_dir="$(dirname $source_file)"
   [ ! -d "$lib_dir" ] && mkdir "$lib_dir"
