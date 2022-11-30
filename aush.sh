@@ -12,37 +12,32 @@ aush_update ()
 if [ -z "$AUSH_UPDATE" ]; then
 export AUSH_UPDATE=1
 # add this source to the updated file if it it is not 'aushed'
-if [ ! -s "$(dirname ${aush_updated_script_file})/lib/aush_source.sh" ]; then
-aush "${aush_updated_script_file}"
-fi
+[ ! -s "$(dirname ${aush_updated_script_file})/lib/aush_source.sh" ] && aush "${aush_updated_script_file}"
 "${aush_updated_script_file}" "$@" &
 exit 0
 else
 cp "${aush_updated_script_file}" "${aush_aushed_script_file}"
 fi
 }
-
 aush_aushed_script_basename="$(basename $0)"
 aush_aushed_script_file="$(pwd)"/"$aush_aushed_script_basename"
 aush_gh_repo="${aush_aushed_script_basename%.*}"
 printf 'aush: checking updates for %s from %s repo' "$aush_aushed_script_file" "$aush_gh_repo"
-cd /tmp
+cd '/tmp'
 # checks for a repo with the same name of the script, no extension, on user account
 gh repo clone "$aush_gh_repo"
 if [ $? -eq 0 ]; then
 cd "$aush_gh_repo"
 # works for 'script', 'script.sh' and 'script.bash' from cloned repo...
-aush_updated_script_file="$(pwd)"/$(basename $(find . -maxdepth 1 -type f (-name "${aush_aushed_script_basename}" -o -name "${aush_aushed_script_basename}.sh" -o -name "${aush_aushed_script_basename}.bash"))
-if [ -z "$aush_updated_script_file" ]
-printf 'aush: could not update, error while checking downloaded script from repo; allowed extensions: .sh and .bash'
-else
+aush_updated_script_file="$(pwd)"/$(find . -maxdepth 1 -type f \( -name "${aush_aushed_script_basename}" -o -name "${aush_aushed_script_basename}.sh" -o -name "${aush_aushed_script_basename}.bash"\))
+if [ ! -z "$aush_updated_script_file" ]; then
 cmp --silent "$aush_aushed_script_file" "$aush_updated_script_file"
-if [ $? -eq 1 ]; then
-aush_update "$@"
+[ $? -eq 1 ] && aush_update "$@"
+else
+printf 'aush: could not update; could not find a .sh or .bash file on repo'
 fi
 else
-printf 'aush: could not update, error while cloning repo; did you logged in with "gh auth login"?'
-fi
+printf 'aush: could not update; did you logged in with "gh auth login"?'
 fi
 cd $(dirname "$aush_aushed_script_file")
 EOF
