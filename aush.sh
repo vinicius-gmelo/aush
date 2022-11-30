@@ -15,7 +15,6 @@ export AUSH_UPDATE=1
 if [ ! -s "$(dirname ${aush_updated_script_file})/lib/aush_source.sh" ]
 aush "${aush_updated_script_file}"
 fi
-aush "${aush_updated_script_file}"
 "${aush_updated_script_file}" "$@" &
 exit 0
 else
