@@ -1,12 +1,9 @@
-# Aush
-Atualiza automaticamente um script a partir do Github sempre que o script é executado. Utiliza um link para a conta do usuário setado em `$HOME/.aush`. 
+# Aush - autoupdate shell script
+Checa por atualizações sempre que um script é executado, utilizando o [GH Cli](https://cli.github.com/). Caso o script esteja desatualizado, atualiza o script. Funciona com shell scripts compatíveis com POSIX.
 ## Requerimentos
-Clonar o repositório ou baixar o script, habilitando a execução com `chmod +x aush.sh`. Adicionar aos comandos do shell com `mv aush.sh aush; mv aush $HOME/.local/bin` (ou `$HOME/.bin`, ou o diretório de scripts do usuário). Inserir `. aush` antes de qualquer comando do script. O próprio `aush` também pode se incluir no script, com o comando `aush [script]`.
+- [GH Cli](https://cli.github.com/): o usuário deve estar logado no [GH CLI](https://cli.github.com/) (`gh auth login`); 
+- `chmod +x aush.sh; mv aush.sh aush; mv aush $HOME/.local/bin` (ou `$HOME/.bin`, ou o diretório de scripts do usuário): o `aush` deve constar nos comandos do shell do usuário para funcionar.
 ## Uso
-```sh
-$ aush [script] # adiciona o source do aush no script
-$ aush set # seta a conta do Github de onde o aush buscará atualizações para os scripts
-$ aush update # atualiza o aush```
-$ aush help
-```
-
+A maneira mais simples de utilizar o `aush` é clonar algum repositório e utilizar o comando `aush [script]`. Com isso, o source é adicionado ao script do usuário e o script passa a sempre buscar atualizações em seu respectivo repositório.
+## TODO
+- `aush update` para atualizar o próprio `aush`
