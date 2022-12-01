@@ -41,6 +41,8 @@ aush_original_script_basename="$(basename $0)"
 export AUSH_GH_REPO="${aush_original_script_basename%.*}"
 export AUSH_ORIGINAL_SCRIPT_FILE="$(pwd)"/"$aush_original_script_basename"
 printf 'aush: checking updates for "%s" from "%s" repo\n' "$AUSH_ORIGINAL_SCRIPT_FILE" "$AUSH_GH_REPO"
+cd '/tmp'
+[ -d "$AUSH_GH_REPO" ] && rm -fr "$AUSH_GH_REPO"
 # checks for a repo with the same name of the script, no extension, on user account
 if gh repo clone "$AUSH_GH_REPO" 2>/dev/null; then
 if ! aush_update "$@"; then
@@ -131,4 +133,3 @@ EOF
     exit 1
     ;;
 esac
-
