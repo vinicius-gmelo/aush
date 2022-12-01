@@ -30,10 +30,10 @@ EOF
 create_source_file ()
 {
   local lib_dir
-  source_file="$(dirname ${script_file})/lib/aush_source.sh"
-  lib_dir="$(dirname $source_file)"
+  source_file="$(dirname "$(realpath "$script_file")")/lib/aush_source.sh"
+  lib_dir="$(dirname "$(realpath "$source_file")")"
   [ ! -d "$lib_dir" ] && mkdir "$lib_dir"
-  cp "$(dirname $(which aush))/aush_source.sh" "$source_file"
+  cp "$(dirname "$(which aush)")/aush_source.sh" "$source_file"
   return 0
 }
 
