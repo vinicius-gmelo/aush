@@ -106,5 +106,29 @@ if [ $# -ne 1 ]; then
   printf "aush [script|help]" && exit 1
 fi
 
-script_file="$1"
-add_source
+
+case "$1" in
+  help)
+    cat << EOF
+usage: aush [script|help]
+'aush' checks for updates of a script using GH Cli. 'aush script' creates and sources 'aush_source.sh' to the user's script, autoupdating the script based on a GH repo. The user must be logged to GH with GH Cli ('gh auth login').
+EOF
+    exit 0
+    ;;
+  update)
+    cd '/tmp'
+    [ -d 'aush' ] && rm -fr 'aush'
+    git clone https://github.com/vinicius-gmelo/aush.git 2>/dev/null
+    cd 'aush'
+    chmod +x 'aush.sh'
+    cp 'aush.sh' "${HOME}/.local/bin/aush"
+    printf 'aush updated succesfully!\n'
+    exit 0
+    ;;
+  *)
+    script_file="$1"
+    add_source
+    exit 1
+    ;;
+esac
+
