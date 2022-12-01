@@ -103,14 +103,19 @@ case "$1" in
     ;;
 
   update)
-    cd '/tmp'
-    [ -d 'aush' ] && rm -fr 'aush'
-    git clone https://github.com/vinicius-gmelo/aush.git 2>/dev/null
-    cd 'aush'
-    chmod +x 'aush.sh'
-    cp 'aush.sh' "${HOME}/.local/bin/aush"
-    printf 'aush: aush updated succesfully!\n'
-    exit 0
+    if aush_update_dir="$(dirname $(which aush))"; then
+      cd '/tmp'
+      [ -d 'aush' ] && rm -fr 'aush'
+      git clone https://github.com/vinicius-gmelo/aush.git 2>/dev/null && cd 'aush' || exit 1
+      chmod +x 'aush.sh'
+      cp 'aush.sh' "${aush_update_dir}/aush"
+      cp 'aush_source.sh' "$aush_update_dir"
+      printf 'aush: aush updated succesfully!\n'
+      exit 0
+    else
+      printf 'aush: aush is not set as a shell command on your shell, please follow the instructions on https://github.com/vinicius-gmelo/aush'
+      exit 1
+    fi
     ;;
 
   help)
