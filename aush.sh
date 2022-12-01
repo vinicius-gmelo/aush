@@ -33,87 +33,8 @@ create_source_file ()
   source_file="$(dirname ${script_file})/lib/aush_source.sh"
   lib_dir="$(dirname $source_file)"
   [ ! -d "$lib_dir" ] && mkdir "$lib_dir"
-  cat <<-'EOF' > "$source_file"
-aush_update ()
-{
-  case "$AUSH_STATUS" in
-    '')
-      local downloaded_script_file
-      cd "$AUSH_REPO"
-      downloaded_script_file="$(find * -maxdepth 1 -type f -name ${AUSH_REPO}*)"
-      if [ -n "$downloaded_script_file" ]; then
-        export AUSH_UPDATED_SCRIPT_FILE="$(pwd)"/"$downloaded_script_file"
-        # check if file is up to date
-        if ! cmp --silent "$AUSH_ORIGINAL_SCRIPT_FILE" "$AUSH_UPDATED_SCRIPT_FILE"; then
-          # start update
-          [ ! -s "$(dirname ${AUSH_UPDATED_SCRIPT_FILE})/lib/aush_source.sh" ] && aush "$AUSH_UPDATED_SCRIPT_FILE"
-          chmod +x "$AUSH_UPDATED_SCRIPT_FILE"
-          # change status and run downloaded script
-          export AUSH_STATUS='updating'
-          "$AUSH_UPDATED_SCRIPT_FILE" "$@"
-          # kill parent process
-          exit 0
-        else
-          # up to date
-          return 0
-        fi
-      else
-        # could not find corresponding shell script on repo's root dir
-        return 1
-      fi
-      ;;
-    updating)
-      cp "$AUSH_UPDATED_SCRIPT_FILE" "$AUSH_ORIGINAL_SCRIPT_FILE"
-      cd $(dirname "$AUSH_ORIGINAL_SCRIPT_FILE")
-      # change status and run updated script
-      export AUSH_STATUS='done'
-      "$AUSH_ORIGINAL_SCRIPT_FILE" "$@"
-      # cleanup downloaded files
-      rm -rf $(dirname "$AUSH_UPDATED_SCRIPT_FILE")
-      # kill parent process
-      exit 0
-      ;;
-    *)
-      return 1
-      ;;
-  esac
-}
-
-if ! . "${HOME}/.aush"; then
-  printf 'aush: could not read "${HOME}/.aush", please config aush with "aush config"\n'
-else
-  case "$AUSH_STATUS" in
-    '')
-      # startup vars used by child processes so that they know the original files
-      aush_original_script_basename="$(basename $0)"
-      export AUSH_REPO="${aush_original_script_basename%.*}"
-      export AUSH_ORIGINAL_SCRIPT_FILE="$(dirname $(which $0))"/"$aush_original_script_basename"
-      printf 'aush: checking updates for "%s" from "%s" repo\n' "$AUSH_ORIGINAL_SCRIPT_FILE" "$AUSH_REPO"
-      cd '/tmp'
-      [ -d "$AUSH_REPO" ] && rm -fr "$AUSH_REPO"
-      # only start aush_update if git clone works
-      if git clone "$aush_remote_git_account"/"$AUSH_REPO".git 2>/dev/null; then
-        if ! aush_update "$@"; then
-          printf 'aush: could not update; could not find "%s", "%s.sh" or "%s.bash" on repo\n' "$AUSH_REPO" "$AUSH_REPO" "$AUSH_REPO"
-        fi
-      else
-        printf 'aush: could not update; error while cloning "%s" repo from "%s" account (check if repo/account exist)\n' "$AUSH_REPO" "$AUSH_HTTPS_ACCOUNT"
-      fi
-      ;;
-    updating)
-      printf 'aush: updating "%s"\n' "$AUSH_ORIGINAL_SCRIPT_FILE"
-      aush_update "$@"
-      ;;
-    done)
-      printf 'aush: "%s" updated succesfully!\n' "$AUSH_ORIGINAL_SCRIPT_FILE"
-      ;;
-  esac
-  # update finished, clean vars
-  unset AUSH_STATUS AUSH_ORIGINAL_SCRIPT_FILE AUSH_UPDATED_SCRIPT_FILE
-fi
-unset aush_remote_git_account
-echo
-EOF
+  cp "$(dirname $(which aush))/aush_source.sh" "$source_file"
+  return 0
 }
 
 add_source ()
@@ -122,11 +43,18 @@ add_source ()
     printf 'aush: "%s" already sources an aush source file; do not add duplicate to code\n' "$script_file"
     if [ ! -s './lib/aush_source.sh' ]; then 
       printf 'aush: could not find a "./lib/aush_source.sh" relative to "%s"; creating it\n' "$script_file"
-      create_source_file
+      if create_source_file; then
+        printf 'aush: "%s" created succesfully' "$source_file"
+        return 0
+      else
+        printf 'aush: could not create source file'
+        return 1
+      fi
+    else
+      printf 'aush: "%s" already have an aush source file, skip creating it' "$script_file"
+      return 0
     fi
-    return 1
   fi
-
   local first_line
   first_line="$(head -n1 $script_file)"
   if [ "$(echo "$first_line" | cut -c1-2)" = '#!' ]; then
@@ -135,41 +63,45 @@ add_source ()
       create_source_file
       # add source after shbang
       sed "1a\|\# aush - https://github.com/vinicius-gmelo/aush; run before any commands\|\.\ $source_file" "$script_file" | tr '|' '\n' > "${script_file}.tmp" && mv "${script_file}.tmp" "$script_file"
-      exit 0
+      return 0
     else
       printf 'aush: aush is made for shell/bash scripts.\n'
-      exit 1
+      return 1
     fi
   else
     printf 'aush: "%s" does not seem to be a script... aush it anyway [y/N]? ' "$script_file"
     read -r add_anyway
     case "$add_anyway" in
+
       Y|y|YY|yy)
         create_source_file
         # add source to beginning of script
         sed "1i\# aush - https://github.com/vinicius-gmelo/aush; run before any commands\|\.\ $source_file\|" "$script_file" | tr '|' '\n' > "${script_file}.tmp" && mv "${script_file}.tmp" "$script_file"
-        exit 0
+        return 0
         ;;
+
       N|n|NN|nn|'')
-        exit 1
+        return 1
         ;;
+
     esac
   fi
-  exit 1
+  return 1
 }
 
 if [ $# -ne 1 ]; then
   printf "aush: usage: aush [script|config|update|help]\n" && exit 1
 fi
 
-
 case "$1" in
+
   config)
     if set_config_file; then
       exit 0
     fi
     exit 1
     ;;
+
   update)
     cd '/tmp'
     [ -d 'aush' ] && rm -fr 'aush'
@@ -180,6 +112,7 @@ case "$1" in
     printf 'aush: aush updated succesfully!\n'
     exit 0
     ;;
+
   help)
     cat << EOF
 aush: usage: aush [script|config|update|help]
@@ -187,9 +120,14 @@ aush: description: 'aush' checks for updates of a script using a remote Git repo
 EOF
     exit 0
     ;;
+
   *)
     script_file="$1"
-    add_source
-    exit 1
+    if add_source; then
+      exit 0
+    else
+      exit 1
+    fi
     ;;
+
 esac
