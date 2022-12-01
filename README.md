@@ -1,4 +1,4 @@
-# aush - autoupdate shell
+# aush - autoupdate sh
 Script que busca atualizações sempre que um shell script é executado, utilizando o [GH Cli](https://cli.github.com/) e um arquivo de source. Funciona com shell scripts compatíveis com POSIX.
 ## Requerimentos
 - [GH Cli](https://cli.github.com/): o usuário deve estar logado no [GH CLI](https://cli.github.com/) (`gh auth login`); 
