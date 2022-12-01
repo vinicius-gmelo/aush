@@ -137,7 +137,7 @@ add_source ()
 }
 
 if [ $# -ne 1 ]; then
-  printf "aush: usage: aush [script|config|update|help]" && exit 1
+  printf "aush: usage: aush [script|config|update|help]\n" && exit 1
 fi
 
 
