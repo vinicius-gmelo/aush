@@ -39,8 +39,10 @@ create_source_file ()
 
 add_source ()
 {
-  if grep 'aush_source.sh' $script_file >/dev/null; then
-    printf 'aush: "%s" already sources an aush source file; do not add duplicate to code\n' "$script_file"
+  if grep 'aush_source.sh' "$script_file" >/dev/null; then
+    printf 'aush: "%s" already sources an "aush_source.sh" file; updating source line\n' "$script_file"
+    sed -i "/aush\_source\.sh/d" "$script_file"
+    add_source && return 0
     if [ ! -s './lib/aush_source.sh' ]; then 
       printf 'aush: could not find a "./lib/aush_source.sh" relative to "%s"; creating it\n' "$script_file"
       if create_source_file; then
