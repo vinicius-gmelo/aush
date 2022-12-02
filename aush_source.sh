@@ -20,7 +20,6 @@ else
           # check if file needs update
           if ! cmp --silent "$AUSH_ORIGINAL_SCRIPT_FILE" "$AUSH_UPDATED_SCRIPT_FILE"; then
             # start update
-            [ ! -s "$(dirname ${AUSH_UPDATED_SCRIPT_FILE})/lib/aush_source.sh" ] && aush "$AUSH_UPDATED_SCRIPT_FILE"
             chmod +x "$AUSH_UPDATED_SCRIPT_FILE"
             # change status and run downloaded script
             export AUSH_STATUS='updating'
@@ -41,6 +40,8 @@ else
       printf 'aush: updating "%s"\n' "$AUSH_ORIGINAL_SCRIPT_FILE"
       cp "$AUSH_UPDATED_SCRIPT_FILE" "$AUSH_ORIGINAL_SCRIPT_FILE"
       cd $(dirname "$AUSH_ORIGINAL_SCRIPT_FILE")
+      # aush the updated file
+      [ ! -s "$(dirname ${AUSH_ORIGINAL_SCRIPT_FILE})/lib/aush_source.sh" ] && aush "$AUSH_ORIGINAL_SCRIPT_FILE"
       # change status and run updated script
       export AUSH_STATUS='done'
       "$AUSH_ORIGINAL_SCRIPT_FILE" "$@"
