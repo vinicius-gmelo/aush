@@ -44,14 +44,14 @@ add_source ()
     if [ ! -s './lib/aush_source.sh' ]; then 
       printf 'aush: could not find a "./lib/aush_source.sh" relative to "%s"; creating it\n' "$script_file"
       if create_source_file; then
-        printf 'aush: "%s" created succesfully' "$source_file"
+        printf 'aush: "%s" created succesfully\n' "$source_file"
         return 0
       else
-        printf 'aush: could not create source file'
+        printf 'aush: could not create source file\n'
         return 1
       fi
     else
-      printf 'aush: "%s" already have an aush source file, skip creating it' "$script_file"
+      printf 'aush: "%s" already have an aush source file, skip creating it\n' "$script_file"
       return 0
     fi
   fi
@@ -65,7 +65,7 @@ add_source ()
       sed "1a\|\# aush - https://github.com/vinicius-gmelo/aush; run before any commands\|\.\ $source_file" "$script_file" | tr '|' '\n' > "${script_file}.tmp" && mv "${script_file}.tmp" "$script_file"
       return 0
     else
-      printf 'aush: aush is made for shell/bash scripts.\n'
+      printf 'aush: aush is made for shell/bash scripts\n'
       return 1
     fi
   else
@@ -90,7 +90,7 @@ add_source ()
 }
 
 if [ $# -ne 1 ]; then
-  printf "aush: usage: aush [script|config|update|help]\n" && exit 1
+  printf 'aush: usage: aush [script|config|update|help]\n' && exit 1
 fi
 
 case "$1" in
@@ -110,10 +110,10 @@ case "$1" in
       chmod +x 'aush.sh'
       cp 'aush.sh' "${aush_update_dir}/aush"
       cp 'aush_source.sh' "$aush_update_dir"
-      printf 'aush: aush updated succesfully!\n'
+      printf 'aush: aush updated succesfully\n'
       exit 0
     else
-      printf 'aush: aush is not set as a shell command on your shell, please follow the instructions on https://github.com/vinicius-gmelo/aush'
+      printf 'aush: aush is not set as a shell command on your shell, please follow the instructions on https://github.com/vinicius-gmelo/aush\n'
       exit 1
     fi
     ;;
