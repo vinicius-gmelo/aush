@@ -41,7 +41,7 @@ else
       cp "$AUSH_UPDATED_SCRIPT_FILE" "$AUSH_ORIGINAL_SCRIPT_FILE"
       cd $(dirname "$AUSH_ORIGINAL_SCRIPT_FILE")
       # update source line on updated script file
-      sed -i "/\#\ aush/,+1d" "$AUSH_ORIGINAL_SCRIPT_FILE" || sed -i "/aush\_source\.sh/d" "$AUSH_ORIGINAL_SCRIPT_FILE"
+      sed -i "/aush\_source\.sh/d" "$AUSH_ORIGINAL_SCRIPT_FILE"
       aush "$AUSH_ORIGINAL_SCRIPT_FILE"
       # change status and run updated script
       export AUSH_STATUS='done'

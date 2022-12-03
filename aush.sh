@@ -62,7 +62,7 @@ add_source ()
     if [ "$lang" = 'sh' ] || [ "$lang" = 'bash' ]; then
       create_source_file
       # add source after shbang
-      sed "1a\|\# aush - https://github.com/vinicius-gmelo/aush; run before any commands\|\.\ $source_file" "$script_file" | tr '|' '\n' > "${script_file}.tmp" && mv "${script_file}.tmp" "$script_file"
+      sed "1a\|\.\ $source_file" "$script_file" | tr '|' '\n' > "${script_file}.tmp" && mv "${script_file}.tmp" "$script_file"
       return 0
     else
       printf 'aush: aush is made for shell/bash scripts\n'
@@ -76,7 +76,7 @@ add_source ()
       Y|y|YY|yy)
         create_source_file
         # add source to beginning of script
-        sed "1i\# aush - https://github.com/vinicius-gmelo/aush; run before any commands\|\.\ $source_file\|" "$script_file" | tr '|' '\n' > "${script_file}.tmp" && mv "${script_file}.tmp" "$script_file"
+        sed "1i\.\ $source_file\|" "$script_file" | tr '|' '\n' > "${script_file}.tmp" && mv "${script_file}.tmp" "$script_file"
         return 0
         ;;
 
